@@ -1,6 +1,5 @@
 package orm;
 
-import com.mysql.cj.x.protobuf.MysqlxCrud;
 import orm.Annotations.Column;
 import orm.Annotations.Entity;
 import orm.Annotations.Id;
@@ -13,14 +12,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class EntityManager <E> implements  DataBaseContext <E>{
     private final Connection connection;
     private static  final String INSERT_TEMPLATE = "INSERT INTO %s (%s) VALUES (%s);";
-    private  static  final String  UPDATE_WITH_WHERE_TEMPLATE = "UPDATE %s SET %s WHERE %s";
-    private static  final String SELECT_WITH_WHERE_PLACEHOLDER_TEMPLATE = "SELECT %s FROM %s %s";
+    private  static  final String  UPDATE_WITH_WHERE_TEMPLATE = "UPDATE %s SET %s WHERE %s;";
+    private static  final String SELECT_WITH_WHERE_PLACEHOLDER_TEMPLATE = "SELECT %s FROM %s %s;";
+    private static  final  String CREATE_TABLE_TEMPLATE = "CREATE TABLE %s (%s);";
+    private static  final  String ALTER_TABLE_TEMPLATE = "ALTER TABLE %s  %s;";
+    private static  final  String SELECT_ALL_EXISTING_COLUMNS_TEMPLATE = "SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = 'mini_orm' AND TABLE_NAME = '%s'";
+    private static  final  String DELETE_ROW_TEMPLATE= "DELETE FROM %s  WHERE id = ?";
     public  EntityManager(Connection connection) {
         this.connection = connection;
     }
@@ -39,7 +45,6 @@ public class EntityManager <E> implements  DataBaseContext <E>{
         return doUpdate(entity,idColumn,idValue);
 
     }
-
 
 
 
@@ -69,6 +74,122 @@ public class EntityManager <E> implements  DataBaseContext <E>{
         if(result.isEmpty()) return null;
         return result.getFirst();
     }
+
+    @Override
+    public void doCreate(Class<E> table) throws SQLException {
+        String tableName = getTableName(table);
+        String formatted = CREATE_TABLE_TEMPLATE.formatted(tableName, getAllFieldsAndDataTypes(table));
+        PreparedStatement preparedStatement = connection.prepareStatement(formatted);
+        preparedStatement.execute();
+
+
+    }
+
+    @Override
+    public void doAlter(E entity) throws SQLException {
+        String newColumns=getColumnsNotExistingInTable(entity);
+        String tabledName = getTableName(entity);
+        String format= ALTER_TABLE_TEMPLATE.formatted(tabledName, getColumnsNotExistingInTable(entity));
+        PreparedStatement preparedStatement = connection.prepareStatement(format);
+        preparedStatement.execute();
+
+    }
+
+    @Override
+    public boolean doDelete(E entity) throws Exception {
+        String tableName = getTableName(entity);
+        String formatted = DELETE_ROW_TEMPLATE.formatted(tableName);
+        PreparedStatement preparedStatement = connection.prepareStatement(formatted);
+        long id = getEntityId(entity);
+        preparedStatement.setLong(1,id);
+        return preparedStatement.execute();
+
+
+
+    }
+
+    private long getEntityId(E entity) throws Exception {
+       // Field field = Arrays.stream(entity.getClass().getDeclaredFields()).filter(f -> f.isAnnotationPresent(Id.class)).findFirst().get();
+        return  Arrays.stream(entity.getClass().getDeclaredFields())
+                .filter(field -> field.isAnnotationPresent(Id.class))
+                .findFirst()
+                .map(field -> getFieldValue(field, entity))
+                .orElseThrow(() -> new Exception("No @Id field found"));
+
+
+
+
+    }
+    private long getFieldValue(Field field, Object entity) throws RuntimeException {
+        try {
+            field.setAccessible(true);
+            return field.getLong(entity);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    private String getColumnsNotExistingInTable(E entity) throws SQLException {
+        List<String> existingColumnsList = getExistingColumnsList(entity);
+        return  Arrays.stream(entity.getClass().getDeclaredFields())
+                .filter(f -> (!existingColumnsList.contains(f.getAnnotation(Column.class).name())))
+                .map(f -> String.format("ADD COLUMN %s %s",getFieldName(f),getFieldType(f)))
+                 .collect(Collectors.joining(", "));
+
+
+    }
+
+    private List<String> getExistingColumnsList(E entity) throws SQLException {
+        List<String> result=new ArrayList<>();
+        String tableName = getTableName(entity);
+        String statement= SELECT_ALL_EXISTING_COLUMNS_TEMPLATE.formatted(tableName);
+        PreparedStatement preparedStatement = connection.prepareStatement(statement);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while (resultSet.next()){
+         result.add(resultSet.getString(1));
+
+        }
+        return result;
+    }
+
+    private String getAllFieldsAndDataTypes(Class<E> table) {
+        List <String> result = new ArrayList<>();
+        Field[] fields = table.getDeclaredFields();
+
+        for (Field field : fields) {
+
+            String format = String.format("%s %s", getFieldName(field), getFieldType(field));
+            if (field.isAnnotationPresent(Id.class)){
+               format = format + " PRIMARY KEY AUTO_INCREMENT";
+            }
+
+            result.add(format);
+
+        }
+
+        return String.join(", ",result);
+    }
+
+    private String getFieldName(Field field) {
+        field.setAccessible(true);
+       return field.getAnnotation(Column.class).name();
+    }
+    private String getFieldType(Field field) {
+        field.setAccessible(true);
+
+       return switch (field.getType().getSimpleName()){
+            case "int","Integer"-> "INT";
+            case "long","Long" -> "BIGINT";
+            case "String" -> "VARCHAR(255)";
+            case "double", "Double" -> "DOUBLE";
+            case "LocalDate" -> "DATE";
+
+           default -> throw new IllegalStateException("Unexpected value: " + field.getType().getSimpleName());
+       };
+    }
+
+
 
     private List<E> baseFind(Class<E> table, String where,Integer limit) throws SQLException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         String fieldList = "*";
@@ -106,11 +227,11 @@ public class EntityManager <E> implements  DataBaseContext <E>{
     private void fillField(E result, Field field, ResultSet resultSet) throws SQLException, IllegalAccessException {
         field.setAccessible(true);
 
-        String dbFieldName = field.getAnnotation(Column.class).name();
+        String dbFieldName = field.getAnnotation(Column.class).name(); //name of the field
         //dbFieldType
-        Class<?> javaType = field.getType();
+        Class<?> javaType = field.getType(); //Generic type of the field
 
-
+        //Checking for the appropriate generic type
         if (javaType == int.class || javaType == Integer.class){
             int value = resultSet.getInt(dbFieldName);
             field.setInt(result,value);
@@ -126,6 +247,10 @@ public class EntityManager <E> implements  DataBaseContext <E>{
         } else if (javaType == LocalDate.class){
             LocalDate value = resultSet.getObject(dbFieldName,LocalDate.class);
             field.set(result,value);
+            return;
+        }else if (javaType == double.class) {
+            double value = resultSet.getDouble(dbFieldName);
+            field.set(result, value);
             return;
         }
         throw new RuntimeException("Unsupported type "+ javaType);
@@ -184,7 +309,7 @@ public class EntityManager <E> implements  DataBaseContext <E>{
         return  updatedColumns == 1;
     }
 
-    private String getTableName(E entity) {
+    private String  getTableName(E entity) {
         Entity annotation = entity.getClass().getAnnotation(Entity.class);
 
         if (annotation == null) throw new RuntimeException("No Entity annotation present");

@@ -1,11 +1,19 @@
 package Entities;
 
-public class Product {
+import orm.Annotations.Column;
+import orm.Annotations.Entity;
+import orm.Annotations.Id;
 
+@Entity(name="products")
+public class Product {
+    @Id
+    @Column(name="id")
     private int id;
 
+    @Column(name="label")
     private String label;
 
+    @Column(name="price")
     private double price;
 
 

@@ -10,4 +10,7 @@ public interface DataBaseContext <E> {
     Iterable<E> find(Class <E> table,String where) throws SQLException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException;
     E findFirst(Class<E> table) throws SQLException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException;
     E findFirst(Class<E> table,String where) throws SQLException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException;
+    void doCreate(Class<E> table) throws SQLException;
+    void doAlter(E entity) throws SQLException;
+    boolean doDelete(E entity) throws Exception;
 }

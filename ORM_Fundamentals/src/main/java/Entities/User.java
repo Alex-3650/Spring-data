@@ -21,11 +21,22 @@ public class User {
     @Column(name="registration")
     private LocalDate registration;
 
+    @Column(name="email")
+    private String email;
 
-    public User(String username, int age, LocalDate registration) {
+    @Column(name="bankBalance")
+    private int bankBalance;
+
+    @Column(name="country")
+    private String country;
+
+    public User(String username, int age, LocalDate registration, String email, int bankBalance, String country) {
         this.username = username;
         this.age = age;
         this.registration = registration;
+        this.email = email;
+        this.bankBalance = bankBalance;
+        this.country = country;
     }
 
     public int getAge() {

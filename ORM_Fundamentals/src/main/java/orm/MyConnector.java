@@ -10,11 +10,14 @@ public class MyConnector {
     private MyConnector(){};
 
    public static void createConnection(String username,String password,String dbName) throws SQLException {
+        if (connection == null) {
+            connection = DriverManager.getConnection(CONNECTION_STRING.formatted(dbName),username,password);
+        }
 
-      connection = DriverManager.getConnection(CONNECTION_STRING.formatted(dbName),username,password);
+
    }
 
-   public  static Connection getConnection() {
+   public static Connection getConnection() {
        return connection;
    }
 
