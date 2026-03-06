@@ -14,14 +14,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class EntityManager <E> implements  DataBaseContext <E>{
     private final Connection connection;
     private static  final String INSERT_TEMPLATE = "INSERT INTO %s (%s) VALUES (%s);";
-    private  static  final String  UPDATE_WITH_WHERE_TEMPLATE = "UPDATE %s SET %s WHERE %s;";
+    private static  final String  UPDATE_WITH_WHERE_TEMPLATE = "UPDATE %s SET %s WHERE %s;";
     private static  final String SELECT_WITH_WHERE_PLACEHOLDER_TEMPLATE = "SELECT %s FROM %s %s;";
     private static  final  String CREATE_TABLE_TEMPLATE = "CREATE TABLE %s (%s);";
     private static  final  String ALTER_TABLE_TEMPLATE = "ALTER TABLE %s  %s;";
@@ -33,7 +31,7 @@ public class EntityManager <E> implements  DataBaseContext <E>{
 
     @Override
     public boolean persist(E entity) throws SQLException, IllegalAccessException {
-         Field idColumn = getIdColum(entity);
+         Field idColumn = getIdColumn(entity);
 
          idColumn.setAccessible(true);
          Object idValue = idColumn.get(entity);
@@ -362,7 +360,7 @@ public class EntityManager <E> implements  DataBaseContext <E>{
         return result;
     }
 
-    private Field getIdColum(E entity) {
+    private Field getIdColumn(E entity) {
         Field[] fields = entity.getClass().getDeclaredFields();
 
         for (Field field : fields) {
@@ -370,7 +368,6 @@ public class EntityManager <E> implements  DataBaseContext <E>{
             if(field.isAnnotationPresent(Id.class)) return field;
 
         }
-
         throw  new RuntimeException("Entity has no Id column");
 
     }

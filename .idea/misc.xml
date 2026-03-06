@@ -5,7 +5,20 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/ORM_Fundamentals/pom.xml" />
+        <option value="$PROJECT_DIR$/ORM_FUNDAMENTALS_02PROJECT/pom.xml" />
+        <option value="$PROJECT_DIR$/StudentManager/pom.xml" />
+        <option value="$PROJECT_DIR$/STUDENT_MANAGER/pom.xml" />
+        <option value="$PROJECT_DIR$/Hibernate_Lab/pom.xml" />
+        <option value="$PROJECT_DIR$/Hibernate_Relations_Demo/pom.xml" />
+        <option value="$PROJECT_DIR$/Hibernate_Relations_Demo_2/pom.xml" />
+        <option value="$PROJECT_DIR$/Spring_Introduction/pom.xml" />
       </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/ORM_FUNDAMENTALS_02PROJECT/pom.xml" />
+        <option value="$PROJECT_DIR$/StudentManager/pom.xml" />
+      </set>
     </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_24" default="true" project-jdk-name="openjdk-24" project-jdk-type="JavaSDK">
