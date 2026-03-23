@@ -8,20 +8,34 @@
         <outputRelativeToContentRoot value="true" />
         <module name="Hibernate_Relations_Demo" />
         <module name="Spring_Introduction" />
-        <module name="ORM_Fundamentals" />
         <module name="STUDENT_MANAGER" />
         <module name="Hibernate_Lab" />
+        <module name="BookSystem" />
+        <module name="GameService" />
         <module name="Hibernate_Relations_Demo_2" />
+        <module name="ORM_Fundamentals" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="AdvancedQueryExercise" target="21" />
+      <module name="Book_Management_System" target="21" />
+      <module name="demo" target="21" />
+      <module name="GameShop" target="21" />
       <module name="ORM_FUNDAMENTALS_02PROJECT" target="24" />
+      <module name="Spring_Data_Advanced_Quering" target="21" />
       <module name="StudentManager" target="24" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="AdvancedQueryExercise" options="-parameters" />
+      <module name="BookSystem" options="-parameters" />
+      <module name="Book_Management_System" options="-parameters" />
+      <module name="GameService" options="-parameters" />
+      <module name="GameShop" options="-parameters" />
+      <module name="Spring_Data_Advanced_Quering" options="-parameters" />
       <module name="Spring_Introduction" options="-parameters" />
+      <module name="demo" options="-parameters" />
     </option>
   </component>
 </project>
