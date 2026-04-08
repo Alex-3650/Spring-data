@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/BookSystem/BookSystem.iml" filepath="$PROJECT_DIR$/BookSystem/BookSystem.iml" />
       <module fileurl="file://$PROJECT_DIR$/JDBC_01/JDBC_01.iml" filepath="$PROJECT_DIR$/JDBC_01/JDBC_01.iml" />
       <module fileurl="file://$PROJECT_DIR$/JDBC_EXE_02/JDBC_EXE_02.iml" filepath="$PROJECT_DIR$/JDBC_EXE_02/JDBC_EXE_02.iml" />
+      <module fileurl="file://$PROJECT_DIR$/JsonProcessing/JSONProcessing.iml" filepath="$PROJECT_DIR$/JsonProcessing/JSONProcessing.iml" />
       <module fileurl="file://$PROJECT_DIR$/Spring_Data.iml" filepath="$PROJECT_DIR$/Spring_Data.iml" />
     </modules>
   </component>
