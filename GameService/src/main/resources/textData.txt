@@ -1,0 +1,8 @@
+RegisterUser|gogo@gmail.com|gogo123|Gogo Georgiev
+LoginUser|gogo@gmail.com|gogo123
+String title, String trailer, String thumbnail, BigDecimal price, String description
+AddGame|Lol|trailer_url|thumbnail_url|29.99|description_url
+AddGame|CS|trailer_url|thumbnail_url|19.99|description_url
+LoginUser|gameStore@gmail.com|12345
+BuyGame|1|2
+Purchase
