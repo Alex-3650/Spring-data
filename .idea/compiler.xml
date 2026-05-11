@@ -25,6 +25,7 @@
       <module name="demo" target="21" />
       <module name="GameShop" target="21" />
       <module name="JSON_Demo" target="24" />
+      <module name="MVC" target="17" />
       <module name="ORM_FUNDAMENTALS_02PROJECT" target="24" />
       <module name="Spring_Data_Advanced_Quering" target="21" />
       <module name="StudentManager" target="24" />

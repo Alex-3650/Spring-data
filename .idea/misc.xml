@@ -27,12 +27,12 @@
     </option>
     <option name="ignoredFiles">
       <set>
-        <option value="$PROJECT_DIR$/../OneDrive/Desktop/Exercise-Resources/pom.xml" />
         <option value="$PROJECT_DIR$/GameShop/pom.xml" />
         <option value="$PROJECT_DIR$/JSON_Demo/pom.xml" />
         <option value="$PROJECT_DIR$/ORM_FUNDAMENTALS_02PROJECT/pom.xml" />
         <option value="$PROJECT_DIR$/Spring_Data_Advanced_Quering/pom.xml" />
         <option value="$PROJECT_DIR$/StudentManager/pom.xml" />
+        <option value="$PROJECT_DIR$/../OneDrive/Desktop/Exercise-Resources/pom.xml" />
       </set>
     </option>
   </component>
